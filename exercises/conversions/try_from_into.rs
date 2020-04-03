@@ -2,7 +2,7 @@
 // Basically, this is the same as From. The main difference is that this should return a Result type
 // instead of the target type itself.
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
-use std::convert::{TryInto, TryFrom};
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug)]
 struct Person {
@@ -10,7 +10,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 // Your task is to complete this implementation
 // in order for the line `let p = Person::try_from("Mark,20")` to compile
 // and return an Ok result of inner type Person.
@@ -28,6 +27,26 @@ struct Person {
 impl TryFrom<&str> for Person {
     type Error = String;
     fn try_from(s: &str) -> Result<Self, Self::Error> {
+        let (name, age) = {
+            if !s.contains(',') {
+                (s, 0)
+            } else {
+                let splitted: Vec<&str> = s.split(",").collect();
+                match splitted[1].parse::<usize>() {
+                    Ok(num) => (splitted[0], num),
+                    Err(_) => ("", 0),
+                }
+            }
+        };
+        if name.is_empty() {
+            Err("Name is mandatory.".into())
+        } else {
+            let person = Self {
+                name: name.into(),
+                age,
+            };
+            Ok(person)
+        }
     }
 }
 
